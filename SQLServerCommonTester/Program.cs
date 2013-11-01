@@ -9,8 +9,8 @@ namespace SQLServerCommonTester
 {
     class Program
     {
-        private static readonly string connStringInitial =  "Server=TOKASHYOS-PC\\SQLEXPRESS;Integrated security=SSPI;database=master";
-        private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;Integrated security=SSPI;database=drugs";
+        private static readonly string connStringInitial =  "Server=TOKASHYO-PC\\SQLEXPRESS;Integrated security=SSPI;database=master";
+        private static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;Integrated security=SSPI;database=drugs";
 
         private static readonly string sqlCommandCreateDB = "CREATE DATABASE Drugs ON PRIMARY " +
                 "(NAME = Drugs, " +

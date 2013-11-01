@@ -67,25 +67,61 @@ namespace SQLServerCommon
             }
         }
 
-        public static void ExecuteQuery()
+        public static void Insert(string iTableName, string iConnectionString, string[] iColumns, IDictionary<string, string> iParameters)
         {
+            SqlConnection sqlConn = new SqlConnection(iConnectionString);
 
+            string sqlCommand = String.Format("INSERT INTO {0} (", iTableName);
+            foreach (string column in iColumns)
+            {
+                sqlCommand += string.Format("{0},",column);
+            }
+            sqlCommand = sqlCommand.Remove(sqlCommand.Length - 1, 1);
+            sqlCommand += ")";
+
+            sqlCommand += " VALUES (";
+            foreach (var pair in iParameters)
+            {
+                sqlCommand += String.Format("{0},", pair.Key);
+            }
+            sqlCommand = sqlCommand.Remove(sqlCommand.Length - 1, 1);
+            sqlCommand += ");";
+
+            SqlCommand myCommand = new SqlCommand(sqlCommand, sqlConn);
+
+            foreach (var parameter in iParameters)
+            {
+                myCommand.Parameters.AddWithValue(parameter.Key, parameter.Value);
+            }
+
+            try
+            {
+                sqlConn.Open();
+                myCommand.ExecuteNonQuery();
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (sqlConn.State == ConnectionState.Open)
+                {
+                    sqlConn.Close();
+                }
+            }
         }
 
-        public static void CreateDatabase(string iDatabaseName, string iConnectionString)
+        public static DataTable ExecuteQuery(string iSQLCommand, string iConnectionString)
         {
-            String str;
-            SqlConnection myConn = new SqlConnection ("Server=localhost;Integrated security=SSPI;database=master");
+            DataTable results = new DataTable();
 
-            str = "CREATE DATABASE MyDatabase ON PRIMARY " +
-                "(NAME = MyDatabase_Data, " +
-                "FILENAME = 'C:\\MyDatabaseData.mdf', " +
-                "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
-                "LOG ON (NAME = MyDatabase_Log, " +
-                "FILENAME = 'C:\\MyDatabaseLog.ldf', " +
-                "SIZE = 1MB, " +
-                "MAXSIZE = 5MB, " +
-                "FILEGROWTH = 10%)";
+            using (SqlConnection conn = new SqlConnection(iConnectionString))
+            using (SqlCommand command = new SqlCommand(iSQLCommand, conn))
+            using (SqlDataAdapter dataAdapter = new SqlDataAdapter(command))
+                dataAdapter.Fill(results);
+
+            return results;
         }
     }
 }
