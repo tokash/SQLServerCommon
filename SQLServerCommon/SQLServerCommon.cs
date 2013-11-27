@@ -112,6 +112,85 @@ namespace SQLServerCommon
             }
         }
 
+        public static void Update(string iTableName, string iConnectionString, string[] iColumns, IDictionary<string, string> iParameters)
+        {
+            SqlConnection sqlConn = new SqlConnection(iConnectionString);
+
+            string sqlCommand = String.Format("UPDATE {0} SET ", iTableName);
+
+            int i=0;
+            foreach(var pair in iParameters)
+            {
+                sqlCommand += string.Format("{0} = {1}", iColumns[i], pair.Value);
+                i++;
+
+                if (i < iParameters.Count)
+                {
+                    sqlCommand += ", ";
+                }
+
+            }
+
+            sqlCommand += ";";
+
+            SqlCommand myCommand = new SqlCommand(sqlCommand, sqlConn);
+
+            foreach (var parameter in iParameters)
+            {
+                myCommand.Parameters.AddWithValue(parameter.Key, parameter.Value);
+            }
+
+            try
+            {
+                sqlConn.Open();
+                myCommand.ExecuteNonQuery();
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (sqlConn.State == ConnectionState.Open)
+                {
+                    sqlConn.Close();
+                }
+            }
+        }
+
+        public static void Delete(string iTableName, string iConnectionString, string iWhereClause)
+        {
+            SqlConnection sqlConn = new SqlConnection(iConnectionString);
+
+            string sqlCommand = String.Format("Delete from {0}  ", iTableName);
+
+            if (iWhereClause != null)
+            {
+                sqlCommand += iWhereClause;
+            }
+
+            sqlCommand += ";";
+
+            SqlCommand myCommand = new SqlCommand(sqlCommand, sqlConn);
+
+            try
+            {
+                sqlConn.Open();
+                myCommand.ExecuteNonQuery();
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                if (sqlConn.State == ConnectionState.Open)
+                {
+                    sqlConn.Close();
+                }
+            }
+        }
+
         public static DataTable ExecuteQuery(string iSQLCommand, string iConnectionString)
         {
             DataTable results = new DataTable();
