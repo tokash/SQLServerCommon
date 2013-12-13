@@ -53,13 +53,22 @@ namespace SQLServerCommonTester
 
             stopWatch.Start();
 
-            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            if (SQLServerCommon.SQLServerCommon.IsTableExists(connString, dbName, "SiteState"))
+            {
+                Console.WriteLine(string.Format("Table {0} exists", "SiteState"));
+            }
+            else
+            {
+                Console.WriteLine(string.Format("Table {0} doesn't exists", "SiteState"));
+            }
 
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[0]), "'abajdsdk12'");
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), "2");
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), "0");
+            //Dictionary<string, string> parameters = new Dictionary<string, string>();
 
-            SQLServerCommon.SQLServerCommon.Update("SiteState", connString, siteStateTableColumns, parameters);
+            //parameters.Add(String.Format("@{0}", siteStateTableColumns[0]), "'abajdsdk12'");
+            //parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), "2");
+            //parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), "0");
+
+            //SQLServerCommon.SQLServerCommon.Update("SiteState", connString, siteStateTableColumns, parameters);
 
             ////Create DB
             //if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(connStringInitial, "Drugs"))

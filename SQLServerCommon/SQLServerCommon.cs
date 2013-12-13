@@ -43,6 +43,45 @@ namespace SQLServerCommon
             return result;
         }
 
+        public static bool IsTableExists(string iConnectionString, string iDatabaseName, string iTableName)
+        {
+            string sqlCreateDBQuery;
+            bool result = false;
+
+            try
+            {
+                var tmpConn = new SqlConnection(iConnectionString);
+                sqlCreateDBQuery = string.Format("SELECT * FROM sysobjects WHERE xtype = 'U' AND name = '{0}'", iTableName);
+
+                using (tmpConn)
+                {
+                    using (SqlCommand sqlCmd = new SqlCommand(sqlCreateDBQuery, tmpConn))
+                    {
+                        tmpConn.Open();
+                        string tableName = (string)sqlCmd.ExecuteScalar();
+                        tmpConn.Close();
+
+                        if (tableName != null)
+                        {
+                            result = true;
+                        }
+                        else
+                        {
+                            result = false;
+                        }
+                    }
+                }
+            } 
+            catch (Exception ex)
+            { 
+                result = false;
+            }
+
+            return result;
+
+            
+        }
+
         public static void ExecuteNonQuery(string iSQLCommand, string iConnectionString)
         {
             SqlConnection sqlConn = new SqlConnection(iConnectionString);
